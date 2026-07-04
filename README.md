@@ -64,10 +64,11 @@
 
 ## 当前仓库定位
 
-当前仓库更适合作为“生鲜配送后端脚手架”，不是最终业务成品。它的价值在于：
+当前仓库现在采用“后端 + 前端同仓”的轻量 monorepo 组织方式，更适合作为“生鲜配送全栈脚手架”，不是最终业务成品。它的价值在于：
 
 - 先把微服务拆分、网关、注册中心、运维骨架稳定下来
 - 用现成的系统、基础设施、会员、支付、商城、仓储能力快速起盘
+- 前后端入口统一到一个仓库，降低联调、交接和部署沟通成本
 - 后续把分拣、加工、配送、打印等生鲜专属能力继续下沉为独立模块
 
 ## 当前保留模块
@@ -118,10 +119,24 @@ fresh-distribution/
 ├── fresh-module-pay
 ├── fresh-module-mall
 ├── fresh-module-wms
+├── ui-admin
 ├── docs
 ├── script
 └── sql
 ```
+
+## Monorepo 结构说明
+
+仓库当前包含两个主要子系统：
+
+- 后端：Maven 多模块微服务工程，负责网关、系统、基础设施、会员、支付、商城、仓储等服务
+- 前端：`ui-admin/` 下的 `pnpm` monorepo，主应用为 `ui-admin/apps/fresh-distribution-admin`
+
+两者共仓管理，但仍分别构建：
+
+- 后端不把前端纳入 Maven modules
+- 前端也不依赖后端 Maven 构建链
+- 联调时通过网关地址 `http://127.0.0.1:48080/admin-api` 对接
 
 ## 分布式架构说明
 
@@ -176,7 +191,7 @@ fresh-distribution/
 mvn -DskipTests package
 ```
 
-### 分布式启动
+### 后端分布式启动
 
 ```bash
 bash script/local/start-distributed.sh
@@ -187,6 +202,18 @@ bash script/local/start-distributed.sh
 ```bash
 bash script/local/stop-distributed.sh
 ```
+
+### 前端启动
+
+```bash
+cd ui-admin
+pnpm install
+pnpm dev:fresh-admin
+```
+
+默认访问地址：
+
+- `http://localhost:5999`
 
 ## 建议的后续扩展模块
 
