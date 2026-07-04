@@ -7,13 +7,13 @@ assignees: ''
 
 ---
 
-碰到问题，请在 <https://github.com/YunaiV/yudao-cloud/issues> 搜索是否存在相似的 issue。
+碰到问题，请先在 <https://github.com/gzwrrr/fresh-distribution/issues> 搜索是否存在相似的 issue。
 
 不按照模板提交的 issue，会被系统自动删除。
 
 ### 基本信息
 
-- ruoyi-vue-pro 版本：
+- fresh-distribution 版本：
 - 操作系统：
 - 数据库：
 

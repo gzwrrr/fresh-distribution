@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>fresh-distribution</artifactId>
+        <groupId>cn.iocoder.cloud</groupId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>fresh-module-mall</artifactId>
+    <packaging>pom</packaging>
+
+    <name>${project.artifactId}</name>
+
+    <description>
+        商城大模块，由 product 商品、promotion 营销、trade 交易、statistics 统计等组成
+    </description>
+    <modules>
+        <module>fresh-module-product-api</module>
+        <module>fresh-module-product-server</module>
+        <module>fresh-module-promotion-api</module>
+        <module>fresh-module-promotion-server</module>
+        <module>fresh-module-trade-api</module>
+        <module>fresh-module-trade-server</module>
+        <module>fresh-module-statistics-api</module>
+        <module>fresh-module-statistics-server</module>
+    </modules>
+
+</project>

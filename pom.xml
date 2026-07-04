@@ -4,37 +4,27 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>cn.iocoder.cloud</groupId>
-    <artifactId>yudao</artifactId>
+    <artifactId>fresh-distribution</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
     <modules>
-        <module>yudao-dependencies</module>
-        <module>yudao-gateway</module>
-        <module>yudao-framework</module>
+        <module>fresh-dependencies</module>
+        <module>fresh-gateway</module>
+        <module>fresh-framework</module>
         <!-- Server 主项目 -->
-        <module>yudao-server</module>
+        <module>fresh-server</module>
         <!--  各种 module 拓展 -->
-        <module>yudao-module-system</module>
-        <module>yudao-module-infra</module>
-        <module>yudao-module-member</module>
-        <module>yudao-module-bpm</module>
-        <module>yudao-module-pay</module>
-        <module>yudao-module-report</module>
-        <module>yudao-module-mp</module>
-        <module>yudao-module-mall</module>
-        <module>yudao-module-erp</module>
-        <module>yudao-module-crm</module>
-        <module>yudao-module-iot</module>
-        <module>yudao-module-mes</module>
-        <module>yudao-module-wms</module>
-        <module>yudao-module-im</module>
-        <!-- 友情提示：基于 Spring AI 实现 LLM 大模型的接入，需要使用 JDK17 版本，详细可见 https://doc.iocoder.cn/ai/build/ -->
-<!--        <module>yudao-module-ai</module>-->
+        <module>fresh-module-system</module>
+        <module>fresh-module-infra</module>
+        <module>fresh-module-member</module>
+        <module>fresh-module-pay</module>
+        <module>fresh-module-mall</module>
+        <module>fresh-module-wms</module>
     </modules>
 
     <name>${project.artifactId}</name>
-    <description>芋道项目基础脚手架</description>
-    <url>https://github.com/YunaiV/ruoyi-vue-pro</url>
+    <description>Fresh Distribution 生鲜配送后端脚手架</description>
+    <url>https://github.com/gzwrrr/fresh-distribution</url>
 
     <properties>
         <revision>2026.06-jdk8-SNAPSHOT</revision>
@@ -56,7 +46,7 @@
         <dependencies>
             <dependency>
                 <groupId>cn.iocoder.cloud</groupId>
-                <artifactId>yudao-dependencies</artifactId>
+                <artifactId>fresh-dependencies</artifactId>
                 <version>${revision}</version>
                 <type>pom</type>
                 <scope>import</scope>

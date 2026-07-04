@@ -1,162 +1,153 @@
-version: '3'
+version: "3"
+
+x-common-env: &common-env
+  TZ: Asia/Shanghai
+  JAVA_TOOL_OPTIONS: -javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar
+  SW_AGENT_TRACE_IGNORE_PATH: Redisson/PING,/actuator/**,/admin/**
+  SW_AGENT_COLLECTOR_BACKEND_SERVICES: "[YOUR_SKYWALKING_ADDR]"
+  SPRING_PROFILES_ACTIVE: test
+  SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR: "[YOUR_NACOS_ADDR]"
+  SPRING_CLOUD_NACOS_CONFIG_NAMESPACE: "[YOUR_NAMESPACE]"
+  SPRING_CLOUD_NACOS_SERVER_ADDR: "[YOUR_NACOS_ADDR]"
+  SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE: "[YOUR_NAMESPACE]"
+
+x-common-volumes: &common-volumes
+  - /docker/fresh-distribution/logs:/root/logs/
+  - /data/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
+
 services:
-  yudao-gateway:
-    image: yudao-gateway
-    container_name: yudao-gateway
+  fresh-gateway:
+    image: fresh-gateway
+    container_name: fresh-gateway
     environment:
-      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
-      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
-      - SW_AGENT_NAME=yudao-gateway
-      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
-      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=[YOUR_SKYWALKING_ADDR] # 请替换 your.skywalking.addr 为你的 skywalking 地址
-      - SPRING_PROFILES_ACTIVE=test # 指定程序运行环境
-      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=[YOUR_NACOS_ADDR] # 配置中心地址
-      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=[YOUR_NAMESPACE] # 命名空间
-      - SPRING_CLOUD_NACOS_SERVER_ADDR=[YOUR_NACOS_ADDR]  # 注册中心地址
-      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=[YOUR_NAMESPACE] # 命名空间
-    volumes:
-      - /docker/yudao-cloud/logs:/root/logs/
-      - /data/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
+      <<: *common-env
+      SW_AGENT_NAME: fresh-gateway
+    volumes: *common-volumes
     restart: always
-    network_mode: host # 以主机网络环境运行
-  yudao-system:
-    image: yudao-module-system-biz
-    container_name: yudao-system
+    network_mode: host
+
+  fresh-system:
+    image: fresh-module-system-server
+    container_name: fresh-system
     environment:
-      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
-      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
-      - SW_AGENT_NAME=yudao-gateway
-      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
-      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=[YOUR_SKYWALKING_ADDR] # 请替换 your.skywalking.addr 为你的 skywalking 地址
-      - SPRING_PROFILES_ACTIVE=test # 指定程序运行环境
-      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=[YOUR_NACOS_ADDR] # 配置中心地址
-      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=[YOUR_NAMESPACE] # 命名空间
-      - SPRING_CLOUD_NACOS_SERVER_ADDR=[YOUR_NACOS_ADDR]  # 注册中心地址
-      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=[YOUR_NAMESPACE] # 命名空间
-    volumes:
-      - /docker/yudao-cloud/logs:/root/logs/
-      - /data/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
+      <<: *common-env
+      SW_AGENT_NAME: fresh-system
+    volumes: *common-volumes
     healthcheck:
-      test: [ "CMD","curl","-f","http://localhost:48081" ]
+      test: ["CMD", "curl", "-f", "http://localhost:48081"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
     restart: always
     network_mode: host
-  yudao-infra:
-    image: yudao-module-infra-biz
-    container_name: yudao-infra
+
+  fresh-infra:
+    image: fresh-module-infra-server
+    container_name: fresh-infra
     environment:
-      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
-      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
-      - SW_AGENT_NAME=yudao-gateway
-      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
-      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=[YOUR_SKYWALKING_ADDR] # 请替换 your.skywalking.addr 为你的 skywalking 地址
-      - SPRING_PROFILES_ACTIVE=test # 指定程序运行环境
-      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=[YOUR_NACOS_ADDR] # 配置中心地址
-      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=[YOUR_NAMESPACE] # 命名空间
-      - SPRING_CLOUD_NACOS_SERVER_ADDR=[YOUR_NACOS_ADDR]  # 注册中心地址
-      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=[YOUR_NAMESPACE] # 命名空间
-    volumes:
-      - /docker/yudao-cloud/logs:/root/logs/
-      - /data/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
-    restart: always
-    network_mode: host
+      <<: *common-env
+      SW_AGENT_NAME: fresh-infra
+    volumes: *common-volumes
     healthcheck:
-      test: [ "CMD","curl","-f","http://localhost:48082" ]
+      test: ["CMD", "curl", "-f", "http://localhost:48082"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
     depends_on:
-      yudao-system:
+      fresh-system:
         condition: service_healthy
-  yudao-report:
-    image: yudao-module-report-biz
-    container_name: yudao-report
-    environment:
-      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
-      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
-      - SW_AGENT_NAME=yudao-gateway
-      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
-      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=[YOUR_SKYWALKING_ADDR] # 请替换 your.skywalking.addr 为你的 skywalking 地址
-      - SPRING_PROFILES_ACTIVE=test # 指定程序运行环境
-      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=[YOUR_NACOS_ADDR] # 配置中心地址
-      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=[YOUR_NAMESPACE] # 命名空间
-      - SPRING_CLOUD_NACOS_SERVER_ADDR=[YOUR_NACOS_ADDR]  # 注册中心地址
-      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=[YOUR_NAMESPACE] # 命名空间
-    volumes:
-      - /docker/yudao-cloud/logs:/root/logs/
-      - /data/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
     restart: always
     network_mode: host
-    depends_on:
-      yudao-infra:
-        condition: service_healthy
-  yudao-bpm:
-    image: yudao-module-bpm-biz
-    container_name: yudao-bpm
+
+  fresh-member:
+    image: fresh-module-member-server
+    container_name: fresh-member
     environment:
-      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
-      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
-      - SW_AGENT_NAME=yudao-gateway
-      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
-      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=[YOUR_SKYWALKING_ADDR] # 请替换 your.skywalking.addr 为你的 skywalking 地址
-      - SPRING_PROFILES_ACTIVE=test # 指定程序运行环境
-      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=[YOUR_NACOS_ADDR] # 配置中心地址
-      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=[YOUR_NAMESPACE] # 命名空间
-      - SPRING_CLOUD_NACOS_SERVER_ADDR=[YOUR_NACOS_ADDR]  # 注册中心地址
-      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=[YOUR_NAMESPACE] # 命名空间
-    volumes:
-      - /docker/yudao-cloud/logs:/root/logs/
-      - /data/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
+      <<: *common-env
+      SW_AGENT_NAME: fresh-member
+    volumes: *common-volumes
+    depends_on:
+      fresh-infra:
+        condition: service_healthy
     restart: always
     network_mode: host
-    depends_on:
-      yudao-infra:
-        condition: service_healthy
-  yudao-pay:
-    image: yudao-module-pay-biz
-    container_name: yudao-pay
+
+  fresh-pay:
+    image: fresh-module-pay-server
+    container_name: fresh-pay
     environment:
-      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
-      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
-      - SW_AGENT_NAME=yudao-gateway
-      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
-      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=[YOUR_SKYWALKING_ADDR] # 请替换 your.skywalking.addr 为你的 skywalking 地址
-      - SPRING_PROFILES_ACTIVE=test # 指定程序运行环境
-      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=[YOUR_NACOS_ADDR] # 配置中心地址
-      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=[YOUR_NAMESPACE] # 命名空间
-      - SPRING_CLOUD_NACOS_SERVER_ADDR=[YOUR_NACOS_ADDR]  # 注册中心地址
-      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=[YOUR_NAMESPACE] # 命名空间
-    volumes:
-      - /docker/yudao-cloud/logs:/root/logs/
-      - /data/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
+      <<: *common-env
+      SW_AGENT_NAME: fresh-pay
+    volumes: *common-volumes
+    depends_on:
+      fresh-infra:
+        condition: service_healthy
     restart: always
     network_mode: host
-    depends_on:
-      yudao-infra:
-        condition: service_healthy
-  yudao-mp:
-    image: yudao-module-mp-biz
-    container_name: yudao-mp
+
+  fresh-product:
+    image: fresh-module-product-server
+    container_name: fresh-product
     environment:
-      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
-      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
-      - SW_AGENT_NAME=yudao-gateway
-      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
-      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=[YOUR_SKYWALKING_ADDR] # 请替换 your.skywalking.addr 为你的 skywalking 地址
-      - SPRING_PROFILES_ACTIVE=test # 指定程序运行环境
-      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=[YOUR_NACOS_ADDR] # 配置中心地址
-      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=[YOUR_NAMESPACE] # 命名空间
-      - SPRING_CLOUD_NACOS_SERVER_ADDR=[YOUR_NACOS_ADDR]  # 注册中心地址
-      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=[YOUR_NAMESPACE] # 命名空间
-    volumes:
-      - /docker/yudao-cloud/logs:/root/logs/
-      - /data/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
+      <<: *common-env
+      SW_AGENT_NAME: fresh-product
+    volumes: *common-volumes
+    depends_on:
+      fresh-infra:
+        condition: service_healthy
     restart: always
     network_mode: host
+
+  fresh-promotion:
+    image: fresh-module-promotion-server
+    container_name: fresh-promotion
+    environment:
+      <<: *common-env
+      SW_AGENT_NAME: fresh-promotion
+    volumes: *common-volumes
     depends_on:
-      yudao-infra:
+      fresh-infra:
         condition: service_healthy
+    restart: always
+    network_mode: host
+
+  fresh-trade:
+    image: fresh-module-trade-server
+    container_name: fresh-trade
+    environment:
+      <<: *common-env
+      SW_AGENT_NAME: fresh-trade
+    volumes: *common-volumes
+    depends_on:
+      fresh-infra:
+        condition: service_healthy
+    restart: always
+    network_mode: host
+
+  fresh-statistics:
+    image: fresh-module-statistics-server
+    container_name: fresh-statistics
+    environment:
+      <<: *common-env
+      SW_AGENT_NAME: fresh-statistics
+    volumes: *common-volumes
+    depends_on:
+      fresh-infra:
+        condition: service_healthy
+    restart: always
+    network_mode: host
+
+  fresh-wms:
+    image: fresh-module-wms-server
+    container_name: fresh-wms
+    environment:
+      <<: *common-env
+      SW_AGENT_NAME: fresh-wms
+    volumes: *common-volumes
+    depends_on:
+      fresh-infra:
+        condition: service_healthy
+    restart: always
+    network_mode: host
