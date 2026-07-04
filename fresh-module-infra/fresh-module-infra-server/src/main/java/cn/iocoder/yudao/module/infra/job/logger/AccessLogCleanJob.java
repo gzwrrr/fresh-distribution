@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.infra.job.logger;
 
+import cn.iocoder.yudao.framework.quartz.core.handler.JobHandler;
 import cn.iocoder.yudao.framework.tenant.core.aop.TenantIgnore;
 import cn.iocoder.yudao.module.infra.service.logger.ApiAccessLogService;
 import com.xxl.job.core.handler.annotation.XxlJob;
@@ -15,7 +16,7 @@ import javax.annotation.Resource;
  */
 @Component
 @Slf4j
-public class AccessLogCleanJob {
+public class AccessLogCleanJob implements JobHandler {
 
     @Resource
     private ApiAccessLogService apiAccessLogService;
@@ -33,8 +34,15 @@ public class AccessLogCleanJob {
     @XxlJob("accessLogCleanJob")
     @TenantIgnore
     public void execute() {
+        execute(null);
+    }
+
+    @Override
+    @TenantIgnore
+    public String execute(String param) {
         Integer count = apiAccessLogService.cleanAccessLog(JOB_CLEAN_RETAIN_DAY, DELETE_LIMIT);
         log.info("[execute][定时执行清理访问日志数量 ({}) 个]", count);
+        return String.format("定时执行清理访问日志数量 %s 个", count);
     }
 
 }

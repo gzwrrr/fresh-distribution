@@ -146,6 +146,13 @@ start_java_service() {
     return 1
   fi
 
+  if [[ "${jar_rel}" == *.jar ]]; then
+    local exec_jar_path="${ROOT_DIR}/${jar_rel%.jar}-exec.jar"
+    if [[ -f "${exec_jar_path}" ]]; then
+      jar_path="${exec_jar_path}"
+    fi
+  fi
+
   if [[ ! -f "${jar_path}" ]]; then
     log "缺少启动包: ${jar_path}"
     return 1
@@ -192,7 +199,8 @@ main() {
   log "分布式服务启动完成"
   log "网关地址: http://127.0.0.1:48080"
   log "Nacos 地址: http://127.0.0.1:8848/nacos"
-  log "监控后台: http://127.0.0.1:48082/admin"
+  log "Actuator 示例: http://127.0.0.1:48082/actuator/health"
+  log "Prometheus 指标示例: http://127.0.0.1:48082/actuator/prometheus"
 }
 
 main "$@"

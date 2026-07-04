@@ -77,10 +77,13 @@
 ### 已具备
 
 - `Nacos`：已经作为注册中心/服务发现方案使用
-- `Spring Boot Actuator`：各服务都开放了 `actuator` 端点
+- `Spring Boot Actuator`：各服务已开放 `actuator` 端点
+- `Prometheus 指标端点`：各服务可通过 `/actuator/prometheus` 暴露指标
 - `Spring Boot Admin Client`：各服务都带有客户端配置
 - `infra-server` 内置 `Spring Boot Admin Server`：
   - 地址通常为 `http://127.0.0.1:48082/admin`
+- `Prometheus + Grafana`：
+  - 仓库内已补齐本地启动脚本、采集配置和默认面板
 - 访问日志能力：
   - 网关侧有访问日志过滤器
   - 业务侧保留访问日志配置能力
@@ -90,13 +93,8 @@
 - 链路追踪代码预埋：
   - 工程里已经保留了 SkyWalking / OpenTelemetry 相关依赖与工具类
 
-### 目前只有“代码准备”，还不算真正落地
+### 目前还没有完整落地的部分
 
-- `Prometheus`
-  - 依赖已经在监控 starter 中引入
-  - 但仓库里没有现成的 Prometheus 独立部署脚本
-- `Grafana`
-  - 当前仓库里没有现成的 Grafana 部署与面板配置
 - `SkyWalking / OTel Collector / Jaeger`
   - 代码层面有预埋
   - 但本地和当前仓库里没有默认启动整套链路追踪后端
@@ -107,11 +105,11 @@
 
 ### 现在这套工程更准确的结论
 
-它已经具备“微服务运行骨架”和“基础监控接入点”，但还没有形成完整的生产级观测体系。  
+它已经具备“微服务运行骨架”和“Prometheus/Grafana 本地观测能力”，但还没有形成完整的生产级观测体系。  
 如果后续要补齐生产稳定性，建议优先补这四块：
 
 1. Nacos 高可用或至少备份方案
-2. Prometheus + Grafana
+2. Prometheus 告警规则 + Alertmanager
 3. SkyWalking 或 OpenTelemetry 全链路
 4. Loki/ELK + 告警通知
 
@@ -130,6 +128,12 @@ bash script/local/start-distributed.sh
 bash script/local/stop-distributed.sh
 ```
 
+如需启动监控面板：
+
+```bash
+bash script/local/start-observability.sh
+```
+
 脚本特点：
 
 - 只启动分布式服务，不启动 `fresh-server`
@@ -138,6 +142,7 @@ bash script/local/stop-distributed.sh
 - 会自动确保 `dev` 命名空间存在
 - 会为每个微服务显式指定 Nacos 注册名
 - 会把日志写到仓库内的 `.run/logs/`
+- 观测栈单独由 `start-observability.sh` 负责拉起
 
 ## 7. 启动后的验证点
 
@@ -158,10 +163,16 @@ bash script/local/stop-distributed.sh
 | Trade | `http://127.0.0.1:48102/` |
 | Statistics | `http://127.0.0.1:48103/` |
 
-说明：
+额外建议验证：
 
-- 本次实测里，以上服务根路径都能返回 `200`。
-- 但 `application-local.yaml` 虽然配置了 `management.endpoints`，当前打包运行下 `/actuator/health` 实测返回 `404`，因此暂时不把它作为本地启动成功的硬验证项。
+- `http://127.0.0.1:48082/actuator/health`
+- `http://127.0.0.1:48082/actuator/prometheus`
+- `http://127.0.0.1:48092/actuator/prometheus`
+
+如果还要验证监控面板：
+
+- `http://127.0.0.1:19090/targets`
+- `http://127.0.0.1:13000`
 
 ### Nacos 内应能看到的注册服务
 

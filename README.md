@@ -154,6 +154,7 @@ fresh-distribution/
 - 统计服务：`statistics-server`
 
 详细说明见 [docs/runbook/distributed-services.md](docs/runbook/distributed-services.md)。
+Prometheus / Grafana 说明见 [docs/runbook/observability-prometheus-grafana.md](docs/runbook/observability-prometheus-grafana.md)。
 
 ## 稳定性与运维基础
 
@@ -162,13 +163,14 @@ fresh-distribution/
 - Nacos 注册 / 服务发现
 - Spring Cloud Gateway 统一入口
 - Spring Boot Admin Server / Client
+- Spring Boot Actuator + Prometheus 指标端点
+- Prometheus + Grafana 本地观测栈
 - 接口访问日志、错误日志
 - Redis 缓存与分布式锁基础
-- 后续可接入 Prometheus / Grafana / SkyWalking / ELK
+- 后续可继续接入 SkyWalking / ELK / Alertmanager
 
 当前仍需补齐的生产级能力：
 
-- Prometheus + Grafana 面板体系
 - 链路追踪后端
 - 集中式日志平台
 - 告警编排与高可用方案
@@ -202,6 +204,18 @@ bash script/local/start-distributed.sh
 ```bash
 bash script/local/stop-distributed.sh
 ```
+
+### 观测栈启动
+
+```bash
+bash script/local/start-observability.sh
+```
+
+默认地址：
+
+- `http://127.0.0.1:19090` Prometheus
+- `http://127.0.0.1:13000` Grafana
+- `admin / admin123`
 
 ### 前端启动
 

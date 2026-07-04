@@ -4,6 +4,7 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.iocoder.yudao.framework.quartz.core.handler.JobHandler;
 import cn.iocoder.yudao.framework.tenant.core.job.TenantJob;
 import cn.iocoder.yudao.module.statistics.service.trade.TradeStatisticsService;
 import com.xxl.job.core.handler.annotation.XxlJob;
@@ -17,7 +18,7 @@ import javax.annotation.Resource;
  * @author owen
  */
 @Component
-public class TradeStatisticsJob {
+public class TradeStatisticsJob implements JobHandler {
 
     @Resource
     private TradeStatisticsService tradeStatisticsService;
@@ -30,6 +31,7 @@ public class TradeStatisticsJob {
      */
     @XxlJob("tradeStatisticsJob")
     @TenantJob
+    @Override
     public String execute(String param) {
         // 默认昨日
         param = ObjUtil.defaultIfBlank(param, "1");

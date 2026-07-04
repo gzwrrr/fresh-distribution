@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.pay.job.transfer;
 
 import cn.hutool.core.util.StrUtil;
+import cn.iocoder.yudao.framework.quartz.core.handler.JobHandler;
 import cn.iocoder.yudao.framework.tenant.core.job.TenantJob;
 import cn.iocoder.yudao.module.pay.service.transfer.PayTransferService;
 import com.xxl.job.core.handler.annotation.XxlJob;
@@ -18,16 +19,17 @@ import javax.annotation.Resource;
  */
 @Component
 @Slf4j
-public class PayTransferSyncJob {
+public class PayTransferSyncJob implements JobHandler {
 
     @Resource
     private PayTransferService transferService;
 
     @XxlJob("payTransferSyncJob")
     @TenantJob // 多租户
+    @Override
     public String execute(String param) {
         int count = transferService.syncTransfer();
         log.info("[execute][同步转账订单 ({}) 个]", count);
-        return StrUtil.format("同步转账订单 ({}) 个",count);
+        return StrUtil.format("同步转账订单 ({}) 个", count);
     }
 }

@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.promotion.job.coupon;
 
 import cn.hutool.core.util.StrUtil;
+import cn.iocoder.yudao.framework.quartz.core.handler.JobHandler;
 import cn.iocoder.yudao.framework.tenant.core.job.TenantJob;
 import cn.iocoder.yudao.module.promotion.service.coupon.CouponService;
 import com.xxl.job.core.handler.annotation.XxlJob;
@@ -15,7 +16,7 @@ import javax.annotation.Resource;
  * @author owen
  */
 @Component
-public class CouponExpireJob {
+public class CouponExpireJob implements JobHandler {
 
     @Resource
     private CouponService couponService;
@@ -23,6 +24,12 @@ public class CouponExpireJob {
     @XxlJob("couponExpireJob")
     @TenantJob // 多租户
     public String execute() {
+        return execute(null);
+    }
+
+    @Override
+    @TenantJob
+    public String execute(String param) {
         int count = couponService.expireCoupon();
         return StrUtil.format("过期优惠券 {} 个", count);
     }

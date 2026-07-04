@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.pay.job.order;
 
 import cn.hutool.core.util.StrUtil;
+import cn.iocoder.yudao.framework.quartz.core.handler.JobHandler;
 import cn.iocoder.yudao.framework.tenant.core.job.TenantJob;
 import cn.iocoder.yudao.module.pay.service.order.PayOrderService;
 import com.xxl.job.core.handler.annotation.XxlJob;
@@ -20,7 +21,7 @@ import java.time.LocalDateTime;
  */
 @Component
 @Slf4j
-public class PayOrderSyncJob {
+public class PayOrderSyncJob implements JobHandler {
 
     /**
      * 同步创建时间在 N 分钟之内的订单
@@ -37,10 +38,16 @@ public class PayOrderSyncJob {
     @XxlJob("payOrderSyncJob")
     @TenantJob // 多租户
     public String execute() {
+        return execute(null);
+    }
+
+    @Override
+    @TenantJob
+    public String execute(String param) {
         LocalDateTime minCreateTime = LocalDateTime.now().minus(CREATE_TIME_DURATION_BEFORE);
         int count = orderService.syncOrder(minCreateTime);
         log.info("[execute][同步支付订单 ({}) 个]", count);
-        return StrUtil.format("同步支付订单 ({}) 个",count);
+        return StrUtil.format("同步支付订单 ({}) 个", count);
     }
 
 }

@@ -1,0 +1,38 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: fresh-distribution-services
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["host.docker.internal:48080"]
+        labels:
+          service: fresh-gateway
+      - targets: ["host.docker.internal:48081"]
+        labels:
+          service: system-server
+      - targets: ["host.docker.internal:48082"]
+        labels:
+          service: infra-server
+      - targets: ["host.docker.internal:48085"]
+        labels:
+          service: pay-server
+      - targets: ["host.docker.internal:48087"]
+        labels:
+          service: member-server
+      - targets: ["host.docker.internal:48092"]
+        labels:
+          service: wms-server
+      - targets: ["host.docker.internal:48100"]
+        labels:
+          service: product-server
+      - targets: ["host.docker.internal:48101"]
+        labels:
+          service: promotion-server
+      - targets: ["host.docker.internal:48102"]
+        labels:
+          service: trade-server
+      - targets: ["host.docker.internal:48103"]
+        labels:
+          service: statistics-server
